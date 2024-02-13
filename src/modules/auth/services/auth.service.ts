@@ -1,8 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { UserEntity } from 'src/modules/user/entities/user.entity';
-import bcrypt from 'bcrypt';
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { JwtService } from '@nestjs/jwt';
+
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
         const user = await this.userRepository.save(
             this.userRepository.create({
                 email,
-                password,
+                password: hashedPassword,
                 name
             })
         )
@@ -34,6 +35,7 @@ export class AuthService {
         }
 
         const jwtPayload = {
+            id: user.id,
             email: user.email,
           };
       
@@ -62,12 +64,15 @@ export class AuthService {
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
+        console.log(password, user.password)
         //비밀번호 일치하지 않을경우
         if (!isValidPassword) {
+            console.log("wrong password")
             throw new UnprocessableEntityException;
         }
 
         const jwtPayload = {
+            id: user.id,
             email: user.email,
           };
       

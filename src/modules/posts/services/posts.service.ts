@@ -25,6 +25,21 @@ export class PostService {
     }
 
     //태그별로 게시물들 다 get하는 기능 추가 필요
+    public async getAllPostsByTag(args: { tag: Tag }): Promise<PostEntity[]> {
+        const { tag } = args
+
+        const posts = await this.postRepository.find({
+            where: {
+                tag,
+            }
+        })
+
+        if (!posts) {
+            throw new UnauthorizedException()
+        }
+
+        return posts;
+    }
 
     public async getPost(args: { postId: string }): Promise<PostEntity> {
         const { postId } = args;

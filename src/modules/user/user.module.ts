@@ -8,9 +8,9 @@ import { UserService } from './services/user.service';
 import { GetUserHandler } from './queries/handlers/get-user.handler';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserRepository]), CqrsModule],
+  imports: [TypeOrmModule.forFeature([UserEntity]), CqrsModule],
   controllers: [UserController],
   providers: [UserService, UserRepository, GetUserHandler],
-  exports: [UserService],
+  exports: [UserRepository, UserService],
 })
 export class UserModule {}

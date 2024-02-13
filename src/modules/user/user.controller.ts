@@ -15,4 +15,6 @@ export class UserController {
 
         return await this.userService.enterCarInfo({ id, carType, carNumber })
     }
+
+    
 }

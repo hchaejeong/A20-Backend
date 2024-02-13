@@ -7,6 +7,7 @@ import { EnvironmentVariables } from 'src/config';
 import { UserModule } from '../user/user.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthService } from './services/auth.service';
+import { UserRepository } from '../user/repositories/user.repository';
 
 @Module({
   imports: [PassportModule, 
