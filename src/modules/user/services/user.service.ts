@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 
 @Injectable()
@@ -12,6 +12,10 @@ export class UserService {
             carType,
             carNumber,
         })
+
+        if (!user) {
+            throw new UnprocessableEntityException();
+        }
 
         return 'car info has been saved'
     }

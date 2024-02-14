@@ -17,14 +17,14 @@ export class OpenaiService {
         })
     }
 
-    async chatCompletion(args: { prompt: string }) {
+    async chatCompletion(args: { prompt: string }): Promise<{ answer: any }> {
         const { prompt } = args
         try {
             const answer = await this.openai.chat.completions.create({ 
                 messages: [{ role: "system", content: "You are a helpful assistant." }, { role: "user", content: prompt }], model: 'gpt-3.5-turbo' })
-            return answer.choices[0]
+            return { answer: answer.choices[0].message }
         } catch (error) {
-            throw new Error(`Failed to generate image: ${error.message}`);
+            throw new Error(`Failed to generate response: ${error.message}`);
         }
     }
 }

@@ -1,12 +1,13 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { OpenaiService } from './services/openai.service';
 
 @Controller('openai')
 export class OpenaiController {
     constructor(private openaiService: OpenaiService) {}
 
-    public async completeConversation(args: { prompt: string }) {
-        const { prompt } = args;
+    @Post('ask')
+    public async completeConversation(@Body() body: { prompt: string }) {
+        const { prompt } = body;
 
         return await this.openaiService.chatCompletion({prompt})
     }
