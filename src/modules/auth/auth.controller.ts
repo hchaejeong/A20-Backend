@@ -18,7 +18,6 @@ export class AuthController {
         return { user, token }
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Get('login')
     public async login(@Body() body: UserLoginRequestDto): Promise<UserLoginResponseDto> {
         const { email, password } = body

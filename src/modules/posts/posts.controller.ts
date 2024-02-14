@@ -33,8 +33,8 @@ export class PostsController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Post('/create')
-    public async createPost(@Body() body: CreatePostRequestDto, @Req() req: Request): Promise<PostEntity> {
+    @Post('create')
+    public async createPost(@Body() body: CreatePostRequestDto, @Req() req: Request): Promise<{newPost: PostEntity}> {
         const { title, content, district, area, imageUrl, tag } = body;
 
         const user: UserEntity = req.user as UserEntity;
@@ -45,6 +45,6 @@ export class PostsController {
 
         const newPost = await this.postService.createPost({ title, content, district, area, imageUrl, tag, userId: user.id });
 
-        return newPost;
+        return { newPost };
     }
 }
