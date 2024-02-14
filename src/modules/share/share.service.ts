@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateBorrowDto } from './dto/create-borrow.dto';
 import { CreateLendDto } from './dto/create-lend.dto';
 import { LendEntity } from './entity/lend.entity';
@@ -13,9 +13,11 @@ export class ShareService {
 
   constructor(private lendRepository: LendRepository, private borrowRepository: BorrowRepository){}
 
-  postLend(lendData: CreateLendDto) {
+  async postLend(lendData: CreateLendDto) {
     //사용자가 주차장을 공유했을 때
     //주소를 위도, 경도로 바꿔야 함
+    let lat = ""
+    let lon = ""
     fetch(
       `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(lendData.address)}`,
       {
@@ -26,17 +28,45 @@ export class ShareService {
       .then((response) => response.text())
       .then((result) => {
         const parsedResult = JSON.parse(result);
-        const lat = parsedResult['documents'][0].y;
-        const lon = parsedResult['documents'][0].x;
+        lat = parsedResult['documents'][0].y;
+        lon = parsedResult['documents'][0].x;
         console.log(lat, lon);
       });
     //db의 lend table에 저장
-    
+    const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, totalQty, resQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = lendData
+
+    const lendCreated = await this.lendRepository.save(
+      this.lendRepository.create({
+        lenderId,
+        parkingLotName,
+        lenderName,
+        relation,
+        phoneNumber,
+        address,
+        lat,
+        lon,
+        totalQty,
+        resQty,
+        baseRate,
+        baseTime,
+        addRate,
+        addTime,
+        openTime,
+        closeTime,
+        operDay
+      })
+    )
+
+    if (!lendCreated) {
+      throw new UnprocessableEntityException()
+    }
+
+    return lendCreated
   }
 
   getAllLends(userId: string) {
     //lend table에서 lenderId가 userId에 해당하는 모든 lend 찾음
-    
+
   }
 
   async getOneLend(lendId: string) {
@@ -54,10 +84,30 @@ export class ShareService {
     //
   }
 
-  postBorrow(borrowData: CreateBorrowDto) {
+  async postBorrow(borrowData: CreateBorrowDto) {
     //사용자가 해당 주차장에 대여 요청
     //db의 borrow table에 저장
     //완료 후 공유자에게 알림 -> socket 써야함 (시간 되면 하자)
+    const { lendId, borrowerId, borrowerName, phoneNumber, borrowStartTime, borrowEndTime, carModel, carNumber, status } = borrowData
+    const borrowCreated = await this.borrowRepository.save(
+      this.borrowRepository.create({
+        lendId,
+        borrowerId,
+        borrowerName,
+        phoneNumber,
+        borrowStartTime,
+        borrowEndTime,
+        carModel,
+        carNumber,
+        status
+      })
+    )
+
+    if (!borrowCreated) {
+      throw new UnprocessableEntityException()
+    }
+
+    return borrowCreated
   }
 
   async getAllBorrowsByUserId(userId: string) {

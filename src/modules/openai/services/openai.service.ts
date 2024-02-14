@@ -22,7 +22,7 @@ export class OpenaiService {
         try {
             const answer = await this.openai.chat.completions.create({ 
                 messages: [{ role: "system", content: "You are a helpful assistant." }, { role: "user", content: prompt }], model: 'gpt-3.5-turbo' })
-            return { answer: answer.choices[0].message }
+            return { answer: answer.choices[0].message.content }
         } catch (error) {
             throw new Error(`Failed to generate response: ${error.message}`);
         }
