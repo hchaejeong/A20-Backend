@@ -3,11 +3,15 @@ import { CreateBorrowDto } from './dto/create-borrow.dto';
 import { CreateLendDto } from './dto/create-lend.dto';
 import { LendEntity } from './entity/lend.entity';
 import { BorrowEntity } from './entity/borrow.entity';
+import { LendRepository } from './repositories/lend.repository';
+import { BorrowRepository } from './repositories/borrow.repository';
 
 @Injectable()
 export class ShareService {
   private lends: LendEntity[] = [];
   private borrows: BorrowEntity[] = [];
+
+  constructor(private lendRepository: LendRepository, private borrowRepository: BorrowRepository){}
 
   postLend(lendData: CreateLendDto) {
     //사용자가 주차장을 공유했을 때
@@ -32,10 +36,18 @@ export class ShareService {
 
   getAllLends(userId: string) {
     //lend table에서 lenderId가 userId에 해당하는 모든 lend 찾음
+    
   }
 
-  getOneLend(lendId: string) {
+  async getOneLend(lendId: string) {
     //lend table에서 lendId에 해당하는 lend 찾기
+    const lend = await this.lendRepository.findOne({
+      where: {
+        id: lendId,
+      }
+    })
+
+    return lend;
   }
 
   deleteLend(lendId: string) {
@@ -48,16 +60,37 @@ export class ShareService {
     //완료 후 공유자에게 알림 -> socket 써야함 (시간 되면 하자)
   }
 
-  getAllBorrowsByUserId(userId: string) {
+  async getAllBorrowsByUserId(userId: string) {
     //borrow table에서 borrowerId가 userId인 모든 borrow 찾기
+    const borrows = await this.borrowRepository.find({
+      where: {
+        borrowerId: userId,
+      }
+    })
+
+    return borrows;
   }
 
-  getAllBorrowsByLendId(lendId: string) {
+  async getAllBorrowsByLendId(lendId: string) {
     //borrow table에서 lendId에 해당하는 모든 borrow 찾기
+    const borrows = await this.borrowRepository.find({
+      where: {
+        lendId,
+      }
+    })
+
+    return borrows;
   }
 
-  getOneBorrow(borrowId: string) {
+  async getOneBorrow(borrowId: string) {
     //borrow table에서 borrowId에 해당하는 borrow 찾기
+    const borrow = await this.borrowRepository.findOne({
+      where: {
+        id: borrowId,
+      }
+    })
+
+    return borrow;
   }
 
   //이게 문제임
