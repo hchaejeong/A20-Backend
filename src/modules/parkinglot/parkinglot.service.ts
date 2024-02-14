@@ -1,14 +1,13 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { Parkinglot } from './parkinglot.entity.ts/parkinglot.entity';
+import { Parkinglot } from './entity/parkinglot.entity';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ParkinglotService {
-  private parkinglots = [];
+  private parkinglots: Parkinglot[] = [];
   private totalCount: number;
 
   private fetchParkinglotData() {
-    let itemsArray = [];
     let urls: string[] = [];
     const key =
       'VoVG1ZMFWJvcOOjjMuCLeHYT6S%2B6zfEyLVSyic2c6%2BYjDRcQiH7LZtnf9Ubay2iTGDfLg5MX%2F1E37QILHk6qpA%3D%3D';
@@ -28,20 +27,18 @@ export class ParkinglotService {
             xml2js.parseString(xmlString, (err, result) => {
               if (err) {
                 console.error(err);
-                throw new ServiceUnavailableException(
-                  'Cannot get data from server',
-                );
+                throw new ServiceUnavailableException('Cannot parse XML');
               } else {
                 // this.totalCount = result.response.header[0].totalCnt[0];
-                itemsArray = result.response.body[0].item;
+                let itemsArray = result.response.body[0].item;
                 itemsArray.forEach((item) => {
+                  item['id'] = uuidv4();
                   for (let key in item) {
                     if (Array.isArray(item[key])) {
                       item[key] = item[key][0];
                     }
                   }
                 });
-                console.log(itemsArray);
                 resolve(itemsArray);
               }
             });
@@ -49,8 +46,9 @@ export class ParkinglotService {
         });
     });
 
-    return Promise.all(promises).then((results) => {
+    return Promise.all(promises).then((results: Parkinglot[]) => {
       this.parkinglots = results.flat();
+      console.log(this.parkinglots);
       return this.parkinglots;
     });
   }

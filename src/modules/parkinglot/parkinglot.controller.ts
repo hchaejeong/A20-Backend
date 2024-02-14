@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ParkinglotService } from './parkinglot.service';
 
 @Controller('parkinglot')
@@ -13,5 +13,10 @@ export class ParkinglotController {
   @Get('/near')
   getNear(@Query('lat') lat: string, @Query('lon') lon: string) {
     return this.parkinglotService.getNear(+lat, +lon);
+  }
+
+  @Get('/:id')
+  getOne(@Param('id') id: string) {
+    return this.parkinglotService.getOne(id);
   }
 }
