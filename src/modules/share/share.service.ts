@@ -27,6 +27,7 @@ export class ShareService {
         console.log(lat, lon);
       });
     //db의 lend table에 저장
+    
   }
 
   getAllLends(userId: string) {

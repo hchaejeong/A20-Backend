@@ -1,10 +1,10 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { Parkinglot } from './entity/parkinglot.entity';
 import { v4 as uuidv4 } from 'uuid';
+import { ParkingLotEntity } from './entity/parkinglot.entity';
 
 @Injectable()
 export class ParkinglotService {
-  private parkinglots: Parkinglot[] = [];
+  private parkinglots: ParkingLotEntity[] = [];
   private totalCount: number;
 
   private fetchParkinglotData() {
@@ -46,7 +46,7 @@ export class ParkinglotService {
         });
     });
 
-    return Promise.all(promises).then((results: Parkinglot[]) => {
+    return Promise.all(promises).then((results: ParkingLotEntity[]) => {
       this.parkinglots = results.flat();
       console.log(this.parkinglots);
       return this.parkinglots;
