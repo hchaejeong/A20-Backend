@@ -1,7 +1,7 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class CreateLendDto {
-  @IsNumber()
+  @IsString()
   readonly lenderId: string;
 
   @IsString()
@@ -23,9 +23,6 @@ export class CreateLendDto {
   readonly totalQty: number; //총 주차 면수
 
   @IsNumber()
-  readonly resQty: number; //주차(예약) 가능 면수
-
-  @IsNumber()
   readonly baseRate: number; //주차 기본 요금(원)
 
   @IsNumber()
@@ -43,6 +40,6 @@ export class CreateLendDto {
   @IsString()
   readonly closeTime: string;
 
-  @IsString()
-  readonly operDay: string; //운영 요일
+  @IsArray()
+  readonly operDay: string[]; //운영 요일
 }

@@ -37,13 +37,13 @@ export class UserEntity extends BaseEntity {
         type: 'varchar',
         nullable: true,
     })
-    carType: string | null;
+    carType?: string | null;
 
     @Column({
         type: 'varchar',
         nullable: true,
     })
-    carNumber: string | null;
+    carNumber?: string | null;
 
     @OneToMany(() => PostEntity, (post) => post.user)
     @Exclude({ toPlainOnly: true })

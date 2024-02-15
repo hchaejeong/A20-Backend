@@ -16,8 +16,8 @@ export class ShareService {
   async postLend(lendData: CreateLendDto) {
     //사용자가 주차장을 공유했을 때
     //주소를 위도, 경도로 바꿔야 함
-    let lat = ""
-    let lon = ""
+    let lat
+    let lon
     fetch(
       `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(lendData.address)}`,
       {
@@ -33,7 +33,7 @@ export class ShareService {
         console.log(lat, lon);
       });
     //db의 lend table에 저장
-    const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, totalQty, resQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = lendData
+    const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, totalQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = lendData
 
     const lendCreated = await this.lendRepository.save(
       this.lendRepository.create({
@@ -46,7 +46,7 @@ export class ShareService {
         lat,
         lon,
         totalQty,
-        resQty,
+        resQty: totalQty,
         baseRate,
         baseTime,
         addRate,

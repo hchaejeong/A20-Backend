@@ -19,6 +19,8 @@ export class PostRepository {
             imageUrl,
             tag,
             user,
+            userId: user.id,
+            userName: user.name
         })
     }
 

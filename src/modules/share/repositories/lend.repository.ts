@@ -10,7 +10,7 @@ export class LendRepository {
     private repository: Repository<LendEntity>,
   ) {}
 
-    create(args: { lenderId: string, parkingLotName: string, lenderName: string, relation: string, phoneNumber: string, address: string, lat: string, lon: string, totalQty: number, resQty: number, baseRate: number, baseTime: number, addRate: number, addTime: number, openTime: string, closeTime: string, operDay: string }): LendEntity {
+    create(args: { lenderId: string, parkingLotName: string, lenderName: string, relation: string, phoneNumber: string, address: string, lat: number, lon: number, totalQty: number, resQty: number, baseRate: number, baseTime: number, addRate: number, addTime: number, openTime: string, closeTime: string, operDay: string[] }): LendEntity {
         const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, lat, lon, totalQty, resQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = args;
 
         return this.repository.create({

@@ -24,9 +24,9 @@ export class PostService {
         return posts;
     }
 
-    //태그별로 게시물들 다 get하는 기능 추가 필요
-    public async getAllPostsByTag(args: { tag: Tag }): Promise<PostEntity[]> {
-        const { tag } = args
+    public async getAllPostsByTag(args: { tag: string }): Promise<PostEntity[]> {
+        const { tag } = args;
+        console.log(tag)
 
         const posts = await this.postRepository.find({
             where: {
@@ -59,7 +59,6 @@ export class PostService {
 
     public async createPost(args: { title: string, content: string, district: string, area: string, imageUrl: string | null, tag: Tag, userId: string }): Promise<PostEntity> {
         const { title, content, district, area, imageUrl, tag, userId } = args;
-
         const user = await this.queryBus.execute(
             new GetUserQuery({
                 where: {
@@ -82,7 +81,7 @@ export class PostService {
                 tag,
                 user,
             }),
-        );
+        ); 
 
         return post;
     }

@@ -51,18 +51,16 @@ export class LendEntity extends BaseEntity {
     address: string;
 
     @Column({
-        type: 'varchar',
-        length: 50,
+        type: 'int',
     })
     @Expose()
-    lat: string;
+    lat: number;
 
     @Column({
-        type: 'varchar',
-        length: 100,
+        type: 'int',
     })
     @Expose()
-    lon: string;
+    lon: number;
 
     @Column({
         type: 'int',
@@ -117,7 +115,8 @@ export class LendEntity extends BaseEntity {
     @Column({
         type: 'varchar',
         length: 100,
+        array: true,
     })
     @Expose()
-    operDay: string;    //운영 요일
+    operDay: string[];    //운영 요일
 }
