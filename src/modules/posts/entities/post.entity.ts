@@ -53,7 +53,7 @@ export class PostEntity extends BaseEntity {
         length: 50
     })
     @Expose()
-    tag: Tag;
+    tag: string;
 
     @ManyToOne(() => UserEntity, (user) => user.posts)
     @Exclude({ toPlainOnly: true })
@@ -62,4 +62,8 @@ export class PostEntity extends BaseEntity {
     @Column()
     @Expose()
     userId: string;
+
+    @Column()
+    @Expose()
+    userName: string;
 }

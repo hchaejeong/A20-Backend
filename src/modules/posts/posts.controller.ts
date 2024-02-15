@@ -11,16 +11,16 @@ import { Request } from 'express';
 export class PostsController {
     constructor(private readonly postService: PostService) {}
 
-    @Get(':district')
+    @Get('district/:district')
     public async getAllDistrictPosts(@Param('district') district: string): Promise<GetPostsRequestDto> {
         const posts = await this.postService.getAllPostsByDistrict({ district });
 
         return { posts };
     }
 
-    @Get(':tag')
-    public async getAllPostsByTag(@Param('tag') tag: Tag): Promise<GetPostsRequestDto> {
-        const posts = await this.postService.getAllPostsByTag({tag})
+    @Get('tag/:tag')
+    public async getAllPostsByTag(@Param('tag') tag: string): Promise<GetPostsRequestDto> {
+        const posts = await this.postService.getAllPostsByTag({ tag })
 
         return {posts}
     }

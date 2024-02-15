@@ -1,7 +1,7 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
 
 export class CreateLendDto {
-  @IsNumber()
+  @IsString()
   readonly lenderId: string;
 
   @IsString()
@@ -34,6 +34,6 @@ export class CreateLendDto {
   @IsNumber()
   readonly addTime: number; //주차 추가 단위 시간(분)
 
-  @IsString()
+  @IsString({ each: true })
   readonly operDay: string[]; //운영 요일
 }
