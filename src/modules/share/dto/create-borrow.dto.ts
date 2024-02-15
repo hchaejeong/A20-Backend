@@ -24,7 +24,4 @@ export class CreateBorrowDto {
 
   @IsString()
   carNumber: string; //차 번호
-
-  @IsNumber()
-  status: number; //대여 진행 상황
 }

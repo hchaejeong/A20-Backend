@@ -36,6 +36,11 @@ export class ShareController {
     return this.shareService.deleteLend(lendId);
   }
 
+  // @Patch('/lend/:id')
+  // updateLend(@Param('id') lendId: string, @Body() updateData: CreateBorrowDto) {
+  //   return this.shareService.updateLend(lendId, updateData);
+  // }
+
   @Post('/borrow')
   postBorrow(@Body() borrowData: CreateBorrowDto) {
     return this.shareService.postBorrow(borrowData);
@@ -46,9 +51,14 @@ export class ShareController {
     return this.shareService.getAllBorrowsByUserId(userId);
   }
 
-  @Get('/borrow/allbyid/:id')
+  @Get('/borrow/allbylendid/:id')
   getAllBorrowsByLendId(@Param('id') lendId: string) {
     return this.shareService.getAllBorrowsByLendId(lendId);
+  }
+
+  @Get('/borrow/:id')
+  getOneBorrow(@Param('id') borrowId: string) {
+    return this.shareService.getOneBorrow(borrowId);
   }
 
   @Patch('/borrow/state/:id')

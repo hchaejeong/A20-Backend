@@ -1,20 +1,22 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ParkingLotEntity } from './entity/parkinglot.entity';
+import { LendEntity } from '../share/entity/lend.entity';
+import { LendRepository } from '../share/repositories/lend.repository';
 
 @Injectable()
 export class ParkinglotService {
-  private parkinglots: ParkingLotEntity[] = [];
-  private totalCount: number;
+  constructor(private lendRepository: LendRepository) {}
+
+  private normalParkinglots: ParkingLotEntity[] = [];
+  private sharedParkinglots: LendEntity[] = [];
 
   private fetchParkinglotData() {
     let urls: string[] = [];
-    const key =
-      'VoVG1ZMFWJvcOOjjMuCLeHYT6S%2B6zfEyLVSyic2c6%2BYjDRcQiH7LZtnf9Ubay2iTGDfLg5MX%2F1E37QILHk6qpA%3D%3D';
 
     for (let i = 1; i <= 15; i++) {
       urls.push(
-        `http://apis.data.go.kr/6300000/pis/parkinglotIF?serviceKey=${key}&numOfRows=50&pageNo=${i}`,
+        `http://apis.data.go.kr/6300000/pis/parkinglotIF?serviceKey=${process.env.PUBLIC_DATA_API_KEY}&numOfRows=50&pageNo=${i}`,
       );
     }
 
@@ -43,14 +45,25 @@ export class ParkinglotService {
               }
             });
           });
+        })
+        .catch((error) => {
+          throw new ServiceUnavailableException('Cannot fetch parkinglot data');
         });
     });
 
     return Promise.all(promises).then((results: ParkingLotEntity[]) => {
-      this.parkinglots = results.flat();
-      console.log(this.parkinglots);
-      return this.parkinglots;
+      this.normalParkinglots = results.flat();
+      console.log(this.normalParkinglots);
+      return { message: 'success' };
     });
+  }
+
+  private async getAllLendData() {
+    const lends = await this.lendRepository.find();
+
+    this.sharedParkinglots = lends;
+
+    return lends;
   }
 
   private haversine(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -74,18 +87,43 @@ export class ParkinglotService {
     return distance;
   }
 
-  getAll() {
-    return this.fetchParkinglotData();
+  init(lat: number, lon: number) {
+    this.fetchParkinglotData();
+    this.getAllLendData();
+
+    this.getNear(lat, lon);
   }
 
   getNear(lat: number, lon: number) {
-    return this.parkinglots.filter(
+    let result: { id: string; lat: number; lon: number; isShared: boolean }[] =
+      [];
+
+    const normalNears = this.normalParkinglots.filter(
       (parkinglot) =>
         this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 1,
     );
+
+    const sharedNears = this.sharedParkinglots.filter(
+      (parkinglot) =>
+        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 1,
+    );
+
+    result.push(
+      ...normalNears.map((near) => {
+        return { id: near.id, lat: +near.lat, lon: +near.lon, isShared: false };
+      }),
+    );
+
+    result.push(
+      ...sharedNears.map((near) => {
+        return { id: near.id, lat: near.lat, lon: near.lon, isShared: true };
+      }),
+    );
+
+    return result;
   }
 
   getOne(id: string) {
-    return this.parkinglots.find((parkinglot) => parkinglot.id === id);
+    return this.normalParkinglots.find((parkinglot) => parkinglot.id === id);
   }
 }

@@ -10,43 +10,81 @@ export class LendRepository {
     private repository: Repository<LendEntity>,
   ) {}
 
-    create(args: { lenderId: string, parkingLotName: string, lenderName: string, relation: string, phoneNumber: string, address: string, lat: string, lon: string, totalQty: number, resQty: number, baseRate: number, baseTime: number, addRate: number, addTime: number, openTime: string, closeTime: string, operDay: string }): LendEntity {
-        const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, lat, lon, totalQty, resQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = args;
+  create(args: {
+    lenderId: string;
+    parkingLotName: string;
+    lenderName: string;
+    relation: string;
+    phoneNumber: string;
+    address: string;
+    lat: number;
+    lon: number;
+    totalQty: number;
+    resQty: number;
+    baseRate: number;
+    baseTime: number;
+    addRate: number;
+    addTime: number;
+    operDay: string[];
+  }): LendEntity {
+    const {
+      lenderId,
+      parkingLotName,
+      lenderName,
+      relation,
+      phoneNumber,
+      address,
+      lat,
+      lon,
+      totalQty,
+      resQty,
+      baseRate,
+      baseTime,
+      addRate,
+      addTime,
+      operDay,
+    } = args;
 
-        return this.repository.create({
-            lenderId,
-            parkingLotName,
-            lenderName,
-            relation,
-            phoneNumber,
-            address,
-            lat,
-            lon,
-            totalQty,
-            resQty,
-            baseRate,
-            baseTime,
-            addRate,
-            addTime,
-            openTime,
-            closeTime,
-            operDay
-        });
+    return this.repository.create({
+      lenderId,
+      parkingLotName,
+      lenderName,
+      relation,
+      phoneNumber,
+      address,
+      lat,
+      lon,
+      totalQty,
+      resQty,
+      baseRate,
+      baseTime,
+      addRate,
+      addTime,
+      operDay,
+    });
   }
 
-  save(...args: Parameters<Repository<LendEntity>['save']>): ReturnType<Repository<LendEntity>['save']> {
+  save(
+    ...args: Parameters<Repository<LendEntity>['save']>
+  ): ReturnType<Repository<LendEntity>['save']> {
     return this.repository.save(...args);
   }
 
-  find(...args: Parameters<Repository<LendEntity>['find']>): ReturnType<Repository<LendEntity>['find']> {
+  find(
+    ...args: Parameters<Repository<LendEntity>['find']>
+  ): ReturnType<Repository<LendEntity>['find']> {
     return this.repository.find(...args);
   }
 
-  findOne(...args: Parameters<Repository<LendEntity>['findOne']>): ReturnType<Repository<LendEntity>['findOne']> {
+  findOne(
+    ...args: Parameters<Repository<LendEntity>['findOne']>
+  ): ReturnType<Repository<LendEntity>['findOne']> {
     return this.repository.findOne(...args);
   }
 
-  update(...args: Parameters<Repository<LendEntity>['update']>): ReturnType<Repository<LendEntity>['update']> {
+  update(
+    ...args: Parameters<Repository<LendEntity>['update']>
+  ): ReturnType<Repository<LendEntity>['update']> {
     return this.repository.update(...args);
   }
 }

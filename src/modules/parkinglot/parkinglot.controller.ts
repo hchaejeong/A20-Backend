@@ -5,9 +5,9 @@ import { ParkinglotService } from './parkinglot.service';
 export class ParkinglotController {
   constructor(private readonly parkinglotService: ParkinglotService) {}
 
-  @Get()
-  getAll() {
-    return this.parkinglotService.getAll();
+  @Get('/init')
+  getAll(@Query('lat') lat: string, @Query('lon') lon: string) {
+    return this.parkinglotService.init(+lat, +lon);
   }
 
   @Get('/near')

@@ -11,29 +11,45 @@ export class ShareService {
   private lends: LendEntity[] = [];
   private borrows: BorrowEntity[] = [];
 
-  constructor(private lendRepository: LendRepository, private borrowRepository: BorrowRepository){}
+  constructor(
+    private lendRepository: LendRepository,
+    private borrowRepository: BorrowRepository,
+  ) {}
 
   async postLend(lendData: CreateLendDto) {
     //사용자가 주차장을 공유했을 때
     //주소를 위도, 경도로 바꿔야 함
-    let lat = ""
-    let lon = ""
+    let lat: number;
+    let lon: number;
     fetch(
       `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURI(lendData.address)}`,
       {
         method: 'GET',
-        headers: { Authorization: 'KakaoAK 09f817ae501d12aed748afc2ad60cb8d' },
+        headers: { Authorization: `KakaoAK ${process.env.KAKAO_API_KEY}` },
       },
     )
       .then((response) => response.text())
       .then((result) => {
         const parsedResult = JSON.parse(result);
-        lat = parsedResult['documents'][0].y;
-        lon = parsedResult['documents'][0].x;
+        lat = parseInt(parsedResult['documents'][0].y);
+        lon = parseInt(parsedResult['documents'][0].x);
         console.log(lat, lon);
       });
     //db의 lend table에 저장
-    const { lenderId, parkingLotName, lenderName, relation, phoneNumber, address, totalQty, resQty, baseRate, baseTime, addRate, addTime, openTime, closeTime, operDay } = lendData
+    const {
+      lenderId,
+      parkingLotName,
+      lenderName,
+      relation,
+      phoneNumber,
+      address,
+      totalQty,
+      baseRate,
+      baseTime,
+      addRate,
+      addTime,
+      operDay,
+    } = lendData;
 
     const lendCreated = await this.lendRepository.save(
       this.lendRepository.create({
@@ -46,27 +62,24 @@ export class ShareService {
         lat,
         lon,
         totalQty,
-        resQty,
+        resQty: totalQty,
         baseRate,
         baseTime,
         addRate,
         addTime,
-        openTime,
-        closeTime,
-        operDay
-      })
-    )
+        operDay,
+      }),
+    );
 
     if (!lendCreated) {
-      throw new UnprocessableEntityException()
+      throw new UnprocessableEntityException();
     }
 
-    return lendCreated
+    return { message: 'success' };
   }
 
   getAllLends(userId: string) {
     //lend table에서 lenderId가 userId에 해당하는 모든 lend 찾음
-
   }
 
   async getOneLend(lendId: string) {
@@ -74,8 +87,8 @@ export class ShareService {
     const lend = await this.lendRepository.findOne({
       where: {
         id: lendId,
-      }
-    })
+      },
+    });
 
     return lend;
   }
@@ -84,11 +97,24 @@ export class ShareService {
     //
   }
 
+  // updateLend(lendId: string, updateData: CreateBorrowDto) {
+
+  // }
+
   async postBorrow(borrowData: CreateBorrowDto) {
     //사용자가 해당 주차장에 대여 요청
     //db의 borrow table에 저장
     //완료 후 공유자에게 알림 -> socket 써야함 (시간 되면 하자)
-    const { lendId, borrowerId, borrowerName, phoneNumber, borrowStartTime, borrowEndTime, carModel, carNumber, status } = borrowData
+    const {
+      lendId,
+      borrowerId,
+      borrowerName,
+      phoneNumber,
+      borrowStartTime,
+      borrowEndTime,
+      carModel,
+      carNumber,
+    } = borrowData;
     const borrowCreated = await this.borrowRepository.save(
       this.borrowRepository.create({
         lendId,
@@ -99,15 +125,15 @@ export class ShareService {
         borrowEndTime,
         carModel,
         carNumber,
-        status
-      })
-    )
+        status: 0,
+      }),
+    );
 
     if (!borrowCreated) {
-      throw new UnprocessableEntityException()
+      throw new UnprocessableEntityException();
     }
 
-    return borrowCreated
+    return { message: 'success' };
   }
 
   async getAllBorrowsByUserId(userId: string) {
@@ -115,8 +141,8 @@ export class ShareService {
     const borrows = await this.borrowRepository.find({
       where: {
         borrowerId: userId,
-      }
-    })
+      },
+    });
 
     return borrows;
   }
@@ -126,8 +152,8 @@ export class ShareService {
     const borrows = await this.borrowRepository.find({
       where: {
         lendId,
-      }
-    })
+      },
+    });
 
     return borrows;
   }
@@ -137,8 +163,8 @@ export class ShareService {
     const borrow = await this.borrowRepository.findOne({
       where: {
         id: borrowId,
-      }
-    })
+      },
+    });
 
     return borrow;
   }
