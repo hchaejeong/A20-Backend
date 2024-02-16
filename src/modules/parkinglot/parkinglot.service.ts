@@ -91,9 +91,9 @@ export class ParkinglotService {
     return distance;
   }
 
-  init(lat: number, lon: number) {
-    this.fetchParkinglotData();
-    this.getAllLendData();
+  async init(lat: number, lon: number) {
+    await this.fetchParkinglotData();
+    await this.getAllLendData();
 
     return this.getNear(lat, lon);
   }
@@ -104,12 +104,12 @@ export class ParkinglotService {
 
     const normalNears = this.normalParkinglots.filter(
       (parkinglot) =>
-        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 10,
+        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 5,
     );
 
     const sharedNears = this.sharedParkinglots.filter(
       (parkinglot) =>
-        this.haversine(lat, lon, parkinglot.lat, parkinglot.lon) <= 10,
+        this.haversine(lat, lon, parkinglot.lat, parkinglot.lon) <= 5,
     );
 
     result.push(
