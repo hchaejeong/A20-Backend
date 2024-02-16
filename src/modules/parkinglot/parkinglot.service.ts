@@ -104,12 +104,12 @@ export class ParkinglotService {
 
     const normalNears = this.normalParkinglots.filter(
       (parkinglot) =>
-        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 1,
+        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 10,
     );
 
     const sharedNears = this.sharedParkinglots.filter(
       (parkinglot) =>
-        this.haversine(lat, lon, parkinglot.lat, parkinglot.lon) <= 1,
+        this.haversine(lat, lon, parkinglot.lat, parkinglot.lon) <= 10,
     );
 
     result.push(
