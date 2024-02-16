@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { ParkingLotEntity } from './entity/parkinglot.entity';
 import { LendEntity } from '../share/entity/lend.entity';
@@ -91,11 +95,11 @@ export class ParkinglotService {
     this.fetchParkinglotData();
     this.getAllLendData();
 
-    this.getNear(lat, lon);
+    return this.getNear(lat, lon);
   }
 
   getNear(lat: number, lon: number) {
-    let result: { id: string; lat: number; lon: number; isShared: boolean }[] =
+    let result: { id: string; lat: string; lon: string; isShared: boolean }[] =
       [];
 
     const normalNears = this.normalParkinglots.filter(
@@ -105,18 +109,23 @@ export class ParkinglotService {
 
     const sharedNears = this.sharedParkinglots.filter(
       (parkinglot) =>
-        this.haversine(lat, lon, +parkinglot.lat, +parkinglot.lon) <= 1,
+        this.haversine(lat, lon, parkinglot.lat, parkinglot.lon) <= 1,
     );
 
     result.push(
       ...normalNears.map((near) => {
-        return { id: near.id, lat: +near.lat, lon: +near.lon, isShared: false };
+        return { id: near.id, lat: near.lat, lon: near.lon, isShared: false };
       }),
     );
 
     result.push(
       ...sharedNears.map((near) => {
-        return { id: near.id, lat: near.lat, lon: near.lon, isShared: true };
+        return {
+          id: near.id,
+          lat: `${near.lat}`,
+          lon: `${near.lon}`,
+          isShared: true,
+        };
       }),
     );
 
@@ -124,6 +133,12 @@ export class ParkinglotService {
   }
 
   getOne(id: string) {
-    return this.normalParkinglots.find((parkinglot) => parkinglot.id === id);
+    const result = this.normalParkinglots.find(
+      (parkinglot) => parkinglot.id === id,
+    );
+
+    if (result) return result;
+
+    throw new NotFoundException('cannot find data with the id');
   }
 }
